@@ -14,7 +14,7 @@ Version:	0.2.6
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://dl.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 # Source0-md5:	739e8e01d6266faed8605f650516afd1
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
@@ -29,6 +29,13 @@ An Open Source iSCSI target with aim to have professional features,
 work well in enterprise environment under real workload, and be
 scalable and versatile enough to meet the challenge of future storage
 needs and developements.
+
+%description -l pl
+Sterownik iSCSI o otwartych ¼ród³ach, którego celem jest posiadanie
+profesjonalnych mo¿liwo¶ci, poprawna praca w ¶rodowisku enterprise pod
+prawdziwym obci±¿eniem oraz skalowalno¶æ i wszechstronno¶æ pozwalaj±ca
+na sprostanie wyzwaniom przysz³ych potrzeb i rozwoju sk³adowania
+danych.
 
 %package -n kernel-targetiscsi
 Summary:	iSCSI kernel module
