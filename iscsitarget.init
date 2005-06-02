@@ -35,7 +35,7 @@ case "$1" in
 		modprobe -s crc32c
 		modprobe -s iscsi_trgt
 		msg_starting "iSCSI Target"
-		daemon /usr/sbin/ietd
+		daemon /sbin/ietd
 		RETVAL=$?
 		[ $RETVAL -eq 0 ] && touch /var/lock/subsys/iscsitarget
 	else
