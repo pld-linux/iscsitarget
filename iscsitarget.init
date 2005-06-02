@@ -44,7 +44,7 @@ case "$1" in
 	;;
   stop)
 	if [ -f /var/lock/subsys/iscsitarget ]; then
-		/usr/sbin/ietadm --op delete
+		/sbin/ietadm --op delete
 		msg_stopping "iSCSI Target"
 		killproc ietd
 		rm -f /var/run/iscsitarget.pid /var/lock/subsys/iscsitarget >/dev/null 2>&1
