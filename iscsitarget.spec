@@ -42,7 +42,7 @@ Summary:	iSCSI kernel module
 Summary(pl):	Modu³ j±dra iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{version}-%{_rel}
 
 %description -n kernel-targetiscsi
 IP over SCSI Target kernel module.
@@ -55,7 +55,7 @@ Summary:	iSCSI SMP kernel module
 Summary(pl):	Modu³ j±dra SMP iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-Requires:	%{name} = %{version}-%{release}
+Requires:	%{name} = %{version}-%{_rel}
 
 %description -n kernel-smp-targetiscsi
 IP over SCSI Target SMP kernel module.
