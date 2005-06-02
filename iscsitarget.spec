@@ -9,13 +9,13 @@
 Summary:	iSCSI target - SCSI over IP
 Summary(pl):	iSCSI target - SCSI po IP
 Name:		iscsitarget
-Version:	0.2.6
+Version:	0.4.8
 %define		_rel 1
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
-# Source0-md5:	739e8e01d6266faed8605f650516afd1
+# Source0-md5:	441921537259ec40df367168ae498ddd
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
@@ -89,15 +89,15 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
 	CC="%{__cc}" \
         M=$PWD O=$PWD \
         %{?with_verbose:V=1}
-    mv iscsi_sfnet{,-$cfg}.ko
+    mv iscsi_trgt{,-$cfg}.ko
 done
 cd ..
 %endif
 
 %if %{with userspace}
-%{__make} -C iscsid \
+%{__make} -C usr \
 	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags} -fno-inline -Wall"
+	CFLAGS="%{rpmcflags} -fno-inline -Wall -I../include"
 %endif
 
 %install
@@ -106,11 +106,11 @@ install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir}/man{1,5,8},/etc/{rc.d/init.d,s
 
 %if %{with kernel}
 install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
-install iscsi_sfnet-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
-        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/iscsi_sfnet.ko
+install kernel/iscsi_trgt-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
+        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/iscsi_trgt.ko
 %if %{with smp} && %{with dist_kernel}
-install iscsi_sfnet-smp.ko \
-        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/misc/iscsi_sfnet.ko
+install kernel/iscsi_trgt-smp.ko \
+        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/misc/iscsi_trgt.ko
 %endif
 %endif
 
@@ -118,11 +118,11 @@ install iscsi_sfnet-smp.ko \
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/targetiscsi
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/targetiscsi
 
-install ietd.conf $RPM_BUILD_ROOT/etc
+install etc/ietd.conf $RPM_BUILD_ROOT/etc
 
-install iscsid/ietd $RPM_BUILD_ROOT%{_sbindir}
-install man/*.1 $RPM_BUILD_ROOT%{_mandir}/man1
-install man/*.5 $RPM_BUILD_ROOT%{_mandir}/man5
+install usr/ietd usr/ietadm $RPM_BUILD_ROOT%{_sbindir}
+install doc/manpages/*.5 $RPM_BUILD_ROOT%{_mandir}/man5
+install doc/manpages/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 %endif
 
 %clean
@@ -141,25 +141,25 @@ rm -rf $RPM_BUILD_ROOT
 %depmod %{_kernel_ver}smp
 
 %post
-/sbin/chkconfig --add iscsi
-#if [ -f /var/lock/subsys/iscsi ]; then
-#	/etc/rc.d/init.d/iscsi restart 1>&2
+/sbin/chkconfig --add targetiscsi
+#if [ -f /var/lock/subsys/targetiscsi ]; then
+#	/etc/rc.d/init.d/targetiscsi restart 1>&2
 #else
-#	echo "Type \"/etc/rc.d/init.d/iscsi start\" to start iscsi" 1>&2
+#	echo "Type \"/etc/rc.d/init.d/targetiscsi start\" to start target iscsi" 1>&2
 #fi
 
 %preun
 if [ "$1" = "0" ]; then
-#	if [ -f /var/lock/subsys/iscsi ]; then
-#		/etc/rc.d/init.d/iscsi stop >&2
+#	if [ -f /var/lock/subsys/targetiscsi ]; then
+#		/etc/rc.d/init.d/targetiscsi stop >&2
 #	fi
-        /sbin/chkconfig --del iscsi
+        /sbin/chkconfig --del targetiscsi
 fi
 
 %if %{with userspace}
 %files
 %defattr(644,root,root,755)
-%doc CHANGELOG README
+%doc ChangeLog
 %attr(755,root,root) %{_sbindir}/*
 %attr(750,root,root) %config(noreplace) %verify(not mtime md5 size) %{_sysconfdir}/ietd.conf
 %attr(644,root,root) %{_mandir}/man?/*
