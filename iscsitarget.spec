@@ -19,7 +19,7 @@ Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
-%{?with_dist_kernel:BuildRequires:	kernel-headers >= 2.6.0}
+%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.0}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -161,10 +161,10 @@ fi
 %defattr(644,root,root,755)
 %doc ChangeLog
 %attr(755,root,root) %{_sbindir}/*
-%attr(750,root,root) %config(noreplace) %verify(not mtime md5 size) %{_sysconfdir}/ietd.conf
-%attr(644,root,root) %{_mandir}/man?/*
-%attr(754,root,root) /etc/rc.d/init.d/targetiscsi
-%attr(640,root,root) %config(noreplace) %verify(not mtime md5 size) /etc/sysconfig/targetiscsi
+%attr(750,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ietd.conf
+%attr(644,root,root) %{_mandir}/man?/*                 
+%attr(754,root,root) /etc/rc.d/init.d/targetiscsi      
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/targetiscsi
 %endif
 
 %if %{with kernel}
