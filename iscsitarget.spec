@@ -9,13 +9,13 @@
 Summary:	iSCSI target - SCSI over IP
 Summary(pl):	iSCSI target - SCSI po IP
 Name:		iscsitarget
-Version:	0.4.10
+Version:	0.4.11
 %define		_rel 1
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
-# Source0-md5:	8a813ce58fa98729fbb9b44e9e22414d
+# Source0-md5:	93ef992ba47a571b9772dccd4800cc52
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
