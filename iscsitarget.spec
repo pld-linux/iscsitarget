@@ -1,10 +1,10 @@
 #
 # Conditional build:
-%bcond_without	dist_kernel     # allow non-distribution kernel
-%bcond_without	kernel          # don't build kernel modules
-%bcond_without	smp             # don't build SMP module
-%bcond_without	userspace       # don't build userspace module
-%bcond_with	verbose         # verbose build (V=1)
+%bcond_without	dist_kernel	# allow non-distribution kernel
+%bcond_without	kernel		# don't build kernel modules
+%bcond_without	smp		# don't build SMP module
+%bcond_without	userspace	# don't build userspace module
+%bcond_with	verbose		# verbose build (V=1)
 #
 Summary:	iSCSI target - SCSI over IP
 Summary(pl):	iSCSI target - SCSI po IP
@@ -163,8 +163,8 @@ fi
 %doc ChangeLog
 %attr(755,root,root) %{_sbindir}/*
 %attr(750,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ietd.conf
-%attr(644,root,root) %{_mandir}/man?/*                 
-%attr(754,root,root) /etc/rc.d/init.d/targetiscsi      
+%attr(644,root,root) %{_mandir}/man?/*
+%attr(754,root,root) /etc/rc.d/init.d/targetiscsi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/targetiscsi
 %endif
 
