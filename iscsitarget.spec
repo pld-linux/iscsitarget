@@ -6,11 +6,15 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
+%ifarch sparc
+%undefine	with_smp
+%endif
+#
 Summary:	iSCSI target - SCSI over IP
 Summary(pl):	iSCSI target - SCSI po IP
 Name:		iscsitarget
 Version:	0.4.11
-%define		_rel 1
+%define		_rel 2
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
@@ -78,7 +82,13 @@ for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}
     install -d include/{linux,config}
     ln -sf %{_kernelsrcdir}/config-$cfg .config
     ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
+%ifarch ppc ppc64
+    install -d include/asm
+    [ ! -d %{_kernelsrcdir}/include/asm-powerpc ] || ln -sf %{_kernelsrcdir}/include/asm-powerpc/* include/asm
+    [ ! -d %{_kernelsrcdir}/include/asm-%{_target_base_arch} ] || ln -snf %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
+%else
     ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+%endif
     ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
     touch include/config/MARKER
 
