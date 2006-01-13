@@ -23,7 +23,9 @@ Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
+%if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.0}
+%endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
