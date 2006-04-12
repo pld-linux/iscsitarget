@@ -10,11 +10,11 @@
 %undefine	with_smp
 %endif
 #
+%define		_rel 2
 Summary:	iSCSI target - SCSI over IP
 Summary(pl):	iSCSI target - SCSI po IP
 Name:		iscsitarget
 Version:	0.4.11
-%define		_rel 2
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
@@ -24,7 +24,7 @@ Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 2.6.0}
+%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.0}
 %endif
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -77,32 +77,32 @@ Modu³ j±dra SMP dla protoko³u IP over SCSI (Target).
 cd kernel
 # kernel module(s)
 for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
-    if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
-        exit 1
-    fi
-    rm -rf include
-    install -d include/{linux,config}
-    ln -sf %{_kernelsrcdir}/config-$cfg .config
-    ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
+	if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
+		exit 1
+	fi
+	rm -rf include
+	install -d include/{linux,config}
+	ln -sf %{_kernelsrcdir}/config-$cfg .config
+	ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
 %ifarch ppc ppc64
-    install -d include/asm
-    [ ! -d %{_kernelsrcdir}/include/asm-powerpc ] || ln -sf %{_kernelsrcdir}/include/asm-powerpc/* include/asm
-    [ ! -d %{_kernelsrcdir}/include/asm-%{_target_base_arch} ] || ln -snf %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
+	install -d include/asm
+	[ ! -d %{_kernelsrcdir}/include/asm-powerpc ] || ln -sf %{_kernelsrcdir}/include/asm-powerpc/* include/asm
+	[ ! -d %{_kernelsrcdir}/include/asm-%{_target_base_arch} ] || ln -snf %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
 %else
-    ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
+	ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
 %endif
-    ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
-    touch include/config/MARKER
+	ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
+	touch include/config/MARKER
 
-    %{__make} -C %{_kernelsrcdir} clean \
-        RCS_FIND_IGNORE="-name '*.ko' -o" \
-        M=$PWD O=$PWD \
-        %{?with_verbose:V=1}
-    %{__make} -C %{_kernelsrcdir} modules \
+	%{__make} -C %{_kernelsrcdir} clean \
+		RCS_FIND_IGNORE="-name '*.ko' -o" \
+		M=$PWD O=$PWD \
+		%{?with_verbose:V=1}
+	%{__make} -C %{_kernelsrcdir} modules \
 	CC="%{__cc}" \
-        M=$PWD O=$PWD \
-        %{?with_verbose:V=1}
-    mv iscsi_trgt{,-$cfg}.ko
+		M=$PWD O=$PWD \
+		%{?with_verbose:V=1}
+	mv iscsi_trgt{,-$cfg}.ko
 done
 cd ..
 %endif
@@ -131,7 +131,7 @@ install kernel/iscsi_trgt-smp.ko \
 install %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/targetiscsi
 install %{SOURCE2} $RPM_BUILD_ROOT/etc/sysconfig/targetiscsi
 
-install etc/ietd.conf $RPM_BUILD_ROOT/etc
+install etc/ietd.conf $RPM_BUILD_ROOT%{_sysconfdir}
 
 install usr/ietd usr/ietadm $RPM_BUILD_ROOT%{_sbindir}
 install doc/manpages/*.5 $RPM_BUILD_ROOT%{_mandir}/man5
