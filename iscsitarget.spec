@@ -26,6 +26,8 @@ URL:		http://iscsitarget.sourceforge.net/
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.0}
 %endif
+Requires(post,preun):	/sbin/chkconfig
+Requires:	rc-scripts
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
@@ -166,7 +168,7 @@ if [ "$1" = "0" ]; then
 #	if [ -f /var/lock/subsys/targetiscsi ]; then
 #		/etc/rc.d/init.d/targetiscsi stop >&2
 #	fi
-        /sbin/chkconfig --del targetiscsi
+	/sbin/chkconfig --del targetiscsi
 fi
 
 %if %{with userspace}
