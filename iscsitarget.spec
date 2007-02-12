@@ -12,7 +12,7 @@
 #
 %define		_rel 2
 Summary:	iSCSI target - SCSI over IP
-Summary(pl):	iSCSI target - SCSI po IP
+Summary(pl.UTF-8):   iSCSI target - SCSI po IP
 Name:		iscsitarget
 Version:	0.4.11
 Release:	%{_rel}
@@ -38,16 +38,16 @@ work well in enterprise environment under real workload, and be
 scalable and versatile enough to meet the challenge of future storage
 needs and developements.
 
-%description -l pl
-Sterownik iSCSI o otwartych ºrÛd≥ach, ktÛrego celem jest posiadanie
-profesjonalnych moøliwo∂ci, poprawna praca w ∂rodowisku enterprise pod
-prawdziwym obci±øeniem oraz skalowalno∂Ê i wszechstronno∂Ê pozwalaj±ca
-na sprostanie wyzwaniom przysz≥ych potrzeb i rozwoju sk≥adowania
+%description -l pl.UTF-8
+Sterownik iSCSI o otwartych ≈∫r√≥d≈Çach, kt√≥rego celem jest posiadanie
+profesjonalnych mo≈ºliwo≈õci, poprawna praca w ≈õrodowisku enterprise pod
+prawdziwym obciƒÖ≈ºeniem oraz skalowalno≈õƒá i wszechstronno≈õƒá pozwalajƒÖca
+na sprostanie wyzwaniom przysz≈Çych potrzeb i rozwoju sk≈Çadowania
 danych.
 
 %package -n kernel-targetiscsi
 Summary:	iSCSI kernel module
-Summary(pl):	Modu≥ j±dra iSCSI
+Summary(pl.UTF-8):   Modu≈Ç jƒÖdra iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires:	%{name} = %{version}-%{_rel}
@@ -55,12 +55,12 @@ Requires:	%{name} = %{version}-%{_rel}
 %description -n kernel-targetiscsi
 IP over SCSI Target kernel module.
 
-%description -n kernel-targetiscsi -l pl
-Modu≥ j±dra dla protoko≥u IP over SCSI (Target).
+%description -n kernel-targetiscsi -l pl.UTF-8
+Modu≈Ç jƒÖdra dla protoko≈Çu IP over SCSI (Target).
 
 %package -n kernel-smp-targetiscsi
 Summary:	iSCSI SMP kernel module
-Summary(pl):	Modu≥ j±dra SMP iSCSI
+Summary(pl.UTF-8):   Modu≈Ç jƒÖdra SMP iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires:	%{name} = %{version}-%{_rel}
@@ -68,8 +68,8 @@ Requires:	%{name} = %{version}-%{_rel}
 %description -n kernel-smp-targetiscsi
 IP over SCSI Target SMP kernel module.
 
-%description -n kernel-smp-targetiscsi -l pl
-Modu≥ j±dra SMP dla protoko≥u IP over SCSI (Target).
+%description -n kernel-smp-targetiscsi -l pl.UTF-8
+Modu≈Ç jƒÖdra SMP dla protoko≈Çu IP over SCSI (Target).
 
 %prep
 %setup -q
