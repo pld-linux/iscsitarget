@@ -12,7 +12,7 @@
 #
 %define		_rel 2
 Summary:	iSCSI target - SCSI over IP
-Summary(pl.UTF-8):   iSCSI target - SCSI po IP
+Summary(pl.UTF-8):	iSCSI target - SCSI po IP
 Name:		iscsitarget
 Version:	0.4.11
 Release:	%{_rel}
@@ -47,7 +47,7 @@ danych.
 
 %package -n kernel-targetiscsi
 Summary:	iSCSI kernel module
-Summary(pl.UTF-8):   Moduł jądra iSCSI
+Summary(pl.UTF-8):	Moduł jądra iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires:	%{name} = %{version}-%{_rel}
@@ -60,7 +60,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 
 %package -n kernel-smp-targetiscsi
 Summary:	iSCSI SMP kernel module
-Summary(pl.UTF-8):   Moduł jądra SMP iSCSI
+Summary(pl.UTF-8):	Moduł jądra SMP iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires:	%{name} = %{version}-%{_rel}
