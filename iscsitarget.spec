@@ -2,6 +2,7 @@
 # Conditional build:
 %bcond_without	dist_kernel	# allow non-distribution kernel
 %bcond_without	kernel		# don't build kernel modules
+%bcond_without	up		# don't build UP module
 %bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
@@ -23,6 +24,8 @@ Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
+# for %%service:
+#BuildRequires:	rpmbuild(macros) >= 1.268
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.0}
 %endif
@@ -157,17 +160,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add targetiscsi
-#if [ -f /var/lock/subsys/targetiscsi ]; then
-#	/etc/rc.d/init.d/targetiscsi restart 1>&2
-#else
-#	echo "Type \"/etc/rc.d/init.d/targetiscsi start\" to start target iscsi" 1>&2
-#fi
+#%%service targetiscsi restart "target iscsi"
 
 %preun
 if [ "$1" = "0" ]; then
-#	if [ -f /var/lock/subsys/targetiscsi ]; then
-#		/etc/rc.d/init.d/targetiscsi stop >&2
-#	fi
+#	%%service targetiscsi stop
 	/sbin/chkconfig --del targetiscsi
 fi
 
