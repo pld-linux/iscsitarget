@@ -2,32 +2,26 @@
 # Conditional build:
 %bcond_without	dist_kernel	# allow non-distribution kernel
 %bcond_without	kernel		# don't build kernel modules
-%bcond_without	up		# don't build UP module
-%bcond_without	smp		# don't build SMP module
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%ifarch sparc
-%undefine	with_smp
-%endif
-#
-%define		_rel 2
+%define		_rel 1
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
 Name:		iscsitarget
-Version:	0.4.11
+Version:	0.4.15
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
-# Source0-md5:	93ef992ba47a571b9772dccd4800cc52
+# Source0-md5:	81390e388d87e3cc17383ef5f4322c28
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 URL:		http://iscsitarget.sourceforge.net/
 # for %%service:
-#BuildRequires:	rpmbuild(macros) >= 1.268
+#BuildRequires:	rpmbuild(macros) >= 1.379
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.0}
+%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.20.2}
 %endif
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
@@ -61,55 +55,12 @@ IP over SCSI Target kernel module.
 %description -n kernel-targetiscsi -l pl.UTF-8
 Moduł jądra dla protokołu IP over SCSI (Target).
 
-%package -n kernel-smp-targetiscsi
-Summary:	iSCSI SMP kernel module
-Summary(pl.UTF-8):	Moduł jądra SMP iSCSI
-Release:	%{_rel}@%{_kernel_ver_str}
-Group:		Base/Kernel
-Requires:	%{name} = %{version}-%{_rel}
-
-%description -n kernel-smp-targetiscsi
-IP over SCSI Target SMP kernel module.
-
-%description -n kernel-smp-targetiscsi -l pl.UTF-8
-Moduł jądra SMP dla protokołu IP over SCSI (Target).
-
 %prep
 %setup -q
 
 %build
 %if %{with kernel}
-cd kernel
-# kernel module(s)
-for cfg in %{?with_dist_kernel:%{?with_smp:smp} up}%{!?with_dist_kernel:nondist}; do
-	if [ ! -r "%{_kernelsrcdir}/config-$cfg" ]; then
-		exit 1
-	fi
-	rm -rf include
-	install -d include/{linux,config}
-	ln -sf %{_kernelsrcdir}/config-$cfg .config
-	ln -sf %{_kernelsrcdir}/include/linux/autoconf-$cfg.h include/linux/autoconf.h
-%ifarch ppc ppc64
-	install -d include/asm
-	[ ! -d %{_kernelsrcdir}/include/asm-powerpc ] || ln -sf %{_kernelsrcdir}/include/asm-powerpc/* include/asm
-	[ ! -d %{_kernelsrcdir}/include/asm-%{_target_base_arch} ] || ln -snf %{_kernelsrcdir}/include/asm-%{_target_base_arch}/* include/asm
-%else
-	ln -sf %{_kernelsrcdir}/include/asm-%{_target_base_arch} include/asm
-%endif
-	ln -sf %{_kernelsrcdir}/Module.symvers-$cfg Module.symvers
-	touch include/config/MARKER
-
-	%{__make} -C %{_kernelsrcdir} clean \
-		RCS_FIND_IGNORE="-name '*.ko' -o" \
-		M=$PWD O=$PWD \
-		%{?with_verbose:V=1}
-	%{__make} -C %{_kernelsrcdir} modules \
-	CC="%{__cc}" \
-		M=$PWD O=$PWD \
-		%{?with_verbose:V=1}
-	mv iscsi_trgt{,-$cfg}.ko
-done
-cd ..
+%build_kernel_modules -C kernel -m iscsi_trgt
 %endif
 
 %if %{with userspace}
@@ -123,13 +74,7 @@ rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT{%{_sbindir},%{_mandir}/man{1,5,8},/etc/{rc.d/init.d,sysconfig}}
 
 %if %{with kernel}
-install -d $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}{,smp}/misc
-install kernel/iscsi_trgt-%{?with_dist_kernel:up}%{!?with_dist_kernel:nondist}.ko \
-        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}/misc/iscsi_trgt.ko
-%if %{with smp} && %{with dist_kernel}
-install kernel/iscsi_trgt-smp.ko \
-        $RPM_BUILD_ROOT/lib/modules/%{_kernel_ver}smp/misc/iscsi_trgt.ko
-%endif
+%install_kernel_modules -m kernel/iscsi_trgt -d misc
 %endif
 
 %if %{with userspace}
@@ -151,12 +96,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %postun -n kernel-targetiscsi
 %depmod %{_kernel_ver}
-
-%post -n kernel-smp-targetiscsi
-%depmod %{_kernel_ver}smp
-
-%postun -n kernel-smp-targetiscsi
-%depmod %{_kernel_ver}smp
 
 %post
 /sbin/chkconfig --add targetiscsi
@@ -183,10 +122,4 @@ fi
 %files -n kernel-targetiscsi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/*
-
-%if %{with smp} && %{with dist_kernel}
-%files -n kernel-smp-targetiscsi
-%defattr(644,root,root,755)
-/lib/modules/%{_kernel_ver}smp/misc/*
-%endif
 %endif
