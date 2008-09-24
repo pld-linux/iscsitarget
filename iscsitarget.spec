@@ -9,14 +9,15 @@
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
 Name:		iscsitarget
-Version:	0.4.15
+Version:	0.4.16
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
-# Source0-md5:	81390e388d87e3cc17383ef5f4322c28
+# Source0-md5:	c7ea3192f1717b40e4c483c9d630082d
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
+Patch0:		%{name}-include.patch
 URL:		http://iscsitarget.sourceforge.net/
 # for %%service:
 #BuildRequires:	rpmbuild(macros) >= 1.379
@@ -57,6 +58,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %if %{with kernel}
@@ -66,7 +68,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 %if %{with userspace}
 %{__make} -C usr \
 	CC="%{__cc}" \
-	CFLAGS="%{rpmcflags} -fno-inline -Wall -I../include"
+	CFLAGS="%{rpmcflags} -fno-inline -Wall -I../include -D_GNU_SOURCE"
 %endif
 
 %install
