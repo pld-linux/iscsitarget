@@ -1,0 +1,16 @@
+diff -Nur iscsitarget-0.4.16-orig/usr/misc.h iscsitarget-0.4.16/usr/misc.h
+--- iscsitarget-0.4.16-orig/usr/misc.h	2008-03-18 07:41:02.000000000 +0100
++++ iscsitarget-0.4.16/usr/misc.h	2008-09-24 21:37:30.000000000 +0200
+@@ -5,10 +5,12 @@
+ #ifndef MISC_H
+ #define MISC_H
+ 
++#ifndef __USE_GNU
+ struct qelem {
+ 	struct qelem *q_forw;
+ 	struct qelem *q_back;
+ };
++#endif
+ 
+ /* stolen list stuff from Linux kernel */
+ 
