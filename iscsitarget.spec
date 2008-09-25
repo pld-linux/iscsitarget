@@ -19,8 +19,8 @@ Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		%{name}-include.patch
 URL:		http://iscsitarget.sourceforge.net/
-# for %%service:
-#BuildRequires:	rpmbuild(macros) >= 1.379
+BuildRequires:	rpmbuild(macros) >= 1.379
+BuildRequires:	openssl-devel
 %if %{with kernel}
 %{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.20.2}
 %endif
@@ -101,11 +101,11 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add targetiscsi
-#%%service targetiscsi restart "target iscsi"
+%service targetiscsi restart "target iscsi"
 
 %preun
 if [ "$1" = "0" ]; then
-#	%%service targetiscsi stop
+	%service targetiscsi stop
 	/sbin/chkconfig --del targetiscsi
 fi
 
@@ -114,7 +114,7 @@ fi
 %defattr(644,root,root,755)
 %doc ChangeLog
 %attr(755,root,root) %{_sbindir}/*
-%attr(750,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ietd.conf
+%attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ietd.conf
 %{_mandir}/man?/*
 %attr(754,root,root) /etc/rc.d/init.d/targetiscsi
 %attr(640,root,root) %config(noreplace) %verify(not md5 mtime size) /etc/sysconfig/targetiscsi
