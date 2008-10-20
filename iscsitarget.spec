@@ -101,7 +101,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %post
 /sbin/chkconfig --add targetiscsi
-%service targetiscsi restart "target iscsi"
 
 %preun
 if [ "$1" = "0" ]; then
