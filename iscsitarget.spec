@@ -9,20 +9,20 @@
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
 Name:		iscsitarget
-Version:	0.4.16
+Version:	1.4.19
 Release:	%{_rel}
 License:	GPL
 Group:		Base/Kernel
 Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
-# Source0-md5:	c7ea3192f1717b40e4c483c9d630082d
+# Source0-md5:	9beca214c28949cce1716b49fec57de4
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
-Patch0:		%{name}-include.patch
+Patch0:		2.6.31.patch
 URL:		http://iscsitarget.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.379
 BuildRequires:	openssl-devel
 %if %{with kernel}
-%{?with_dist_kernel:BuildRequires:	kernel-module-build >= 3:2.6.20.2}
+%{?with_dist_kernel:BuildRequires:	kernel%{_alt_kernel}-module-build >= 3:2.6.20.2}
 %endif
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
