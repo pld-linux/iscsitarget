@@ -5,7 +5,7 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		_rel 1
+%define		_rel 2
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
 Name:		iscsitarget
@@ -18,6 +18,7 @@ Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		2.6.31.patch
+Patch1:		2.6.33.patch
 URL:		http://iscsitarget.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.379
 BuildRequires:	openssl-devel
@@ -59,6 +60,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with kernel}
