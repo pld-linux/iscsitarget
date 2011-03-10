@@ -1,32 +1,5 @@
-Index: iscsitarget-1.4.19/kernel/target.c
-===================================================================
---- iscsitarget-1.4.19.orig/kernel/target.c	2009-09-28 21:08:20.000000000 +0200
-+++ iscsitarget-1.4.19/kernel/target.c	2010-12-08 17:02:59.247843222 +0100
-@@ -7,11 +7,12 @@
- #include "iscsi.h"
- #include "digest.h"
- #include "iscsi_dbg.h"
-+#include <linux/semaphore.h>
- 
- #define	MAX_NR_TARGETS	(1UL << 30)
- 
- static LIST_HEAD(target_list);
--static DECLARE_MUTEX(target_list_sem);
-+static DEFINE_SEMAPHORE(target_list_sem);
- static u32 next_target_id;
- static u32 nr_targets;
- 
-@@ -157,7 +158,7 @@ static int iscsi_target_create(struct ta
- 
- 	strncpy(target->name, name, sizeof(target->name) - 1);
- 
--	init_MUTEX(&target->target_sem);
-+	sema_init(&target->target_sem, 0);
- 	spin_lock_init(&target->session_list_lock);
- 
- 	INIT_LIST_HEAD(&target->session_list);
---- trunk/kernel/config.c	2010/03/30 18:08:19	309
-+++ trunk/kernel/config.c	2011/01/12 20:39:36	378
+--- trunk/kernel/config.c	(wersja 377)
++++ trunk/kernel/config.c	(wersja 378)
 @@ -9,7 +9,7 @@
  #include "iscsi.h"
  #include "iscsi_dbg.h"
@@ -66,6 +39,178 @@ Index: iscsitarget-1.4.19/kernel/target.c
  
  	return 0;
  }
+--- trunk/kernel/volume.c	(wersja 377)
++++ trunk/kernel/volume.c	(wersja 378)
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/parser.h>
++#include <linux/blkdev.h>
+ 
+ #include "iscsi.h"
+ #include "iscsi_dbg.h"
+--- trunk/kernel/iscsi.h	(wersja 377)
++++ trunk/kernel/iscsi.h	(wersja 378)
+@@ -130,7 +130,7 @@
+ 	/* Points either to own list or global pool */
+ 	struct worker_thread_info * wthread_info;
+ 
+-	struct semaphore target_sem;
++	struct mutex target_mutex;
+ };
+ 
+ struct iscsi_queue {
+--- trunk/kernel/target.c	(wersja 377)
++++ trunk/kernel/target.c	(wersja 378)
+@@ -4,6 +4,8 @@
+  * Released under the terms of the GNU GPL v2.0.
+  */
+ 
++#include <linux/mutex.h>
++
+ #include "iscsi.h"
+ #include "digest.h"
+ #include "iscsi_dbg.h"
+@@ -11,7 +13,7 @@
+ #define	MAX_NR_TARGETS	(1UL << 30)
+ 
+ static LIST_HEAD(target_list);
+-static DECLARE_MUTEX(target_list_sem);
++static DEFINE_MUTEX(target_list_mutex);
+ static u32 next_target_id;
+ static u32 nr_targets;
+ 
+@@ -48,16 +50,16 @@
+ 	int err = 0;
+ 
+ 	if (interruptible)
+-		err = down_interruptible(&target->target_sem);
++		err = mutex_lock_interruptible(&target->target_mutex);
+ 	else
+-		down(&target->target_sem);
++		mutex_lock(&target->target_mutex);
+ 
+ 	return err;
+ }
+ 
+ inline void target_unlock(struct iscsi_target *target)
+ {
+-	up(&target->target_sem);
++	mutex_unlock(&target->target_mutex);
+ }
+ 
+ static struct iscsi_target *__target_lookup_by_id(u32 id)
+@@ -86,9 +88,9 @@
+ {
+ 	struct iscsi_target *target;
+ 
+-	down(&target_list_sem);
++	mutex_lock(&target_list_mutex);
+ 	target = __target_lookup_by_id(id);
+-	up(&target_list_sem);
++	mutex_unlock(&target_list_mutex);
+ 
+ 	return target;
+ }
+@@ -157,7 +159,7 @@
+ 
+ 	strncpy(target->name, name, sizeof(target->name) - 1);
+ 
+-	init_MUTEX(&target->target_sem);
++	mutex_init(&target->target_mutex);
+ 	spin_lock_init(&target->session_list_lock);
+ 
+ 	INIT_LIST_HEAD(&target->session_list);
+@@ -195,7 +197,7 @@
+ 	u32 tid = info->tid;
+ 	int err;
+ 
+-	err = down_interruptible(&target_list_sem);
++	err = mutex_lock_interruptible(&target_list_mutex);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -204,7 +206,7 @@
+ 		goto out;
+ 	}
+ 
+-	if (__target_lookup_by_name(info->name) || 
++	if (__target_lookup_by_name(info->name) ||
+ 			(tid && __target_lookup_by_id(tid))) {
+ 		err = -EEXIST;
+ 		goto out;
+@@ -223,7 +225,7 @@
+ 	if (!err)
+ 		nr_targets++;
+ out:
+-	up(&target_list_sem);
++	mutex_unlock(&target_list_mutex);
+ 
+ 	return err;
+ }
+@@ -248,7 +250,7 @@
+ 	module_put(THIS_MODULE);
+ }
+ 
+-/* @locking: target_list_sem must be locked */
++/* @locking: target_list_mutex must be locked */
+ static int __target_del(struct iscsi_target *target)
+ {
+ 	int err;
+@@ -283,7 +285,7 @@
+ 	struct iscsi_target *target;
+ 	int err;
+ 
+-	err = down_interruptible(&target_list_sem);
++	err = mutex_lock_interruptible(&target_list_mutex);
+ 	if (err < 0)
+ 		return err;
+ 
+@@ -295,7 +297,7 @@
+ 
+ 	err = __target_del(target);
+ out:
+-	up(&target_list_sem);
++	mutex_unlock(&target_list_mutex);
+ 
+ 	return err;
+ }
+@@ -305,7 +307,7 @@
+ 	struct iscsi_target *target, *tmp;
+ 	int err;
+ 
+-	down(&target_list_sem);
++	mutex_lock(&target_list_mutex);
+ 
+ 	if (!list_empty(&target_list))
+ 		iprintk("Removing all connections, sessions and targets\n");
+@@ -319,7 +321,7 @@
+ 
+ 	next_target_id = 0;
+ 
+-	up(&target_list_sem);
++	mutex_unlock(&target_list_mutex);
+ }
+ 
+ static void *iet_seq_start(struct seq_file *m, loff_t *pos)
+@@ -327,7 +329,7 @@
+ 	int err;
+ 
+ 	/* are you sure this is to be interruptible? */
+-	err = down_interruptible(&target_list_sem);
++	err = mutex_lock_interruptible(&target_list_mutex);
+ 	if (err < 0)
+ 		return ERR_PTR(err);
+ 
+@@ -341,7 +343,7 @@
+ 
+ static void iet_seq_stop(struct seq_file *m, void *v)
+ {
+-	up(&target_list_sem);
++	mutex_unlock(&target_list_mutex);
+ }
+ 
+ static int iet_seq_show(struct seq_file *m, void *p)
 --- trunk/kernel/wthread.c	2010/04/11 15:34:14	320
 +++ trunk/kernel/wthread.c	2011/01/19 18:36:01	389
 @@ -67,14 +67,13 @@
