@@ -18,6 +18,7 @@ Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
 Source1:	%{name}.init
 Source2:	%{name}.sysconfig
 Patch0:		iscsitarget-2.6.37.patch
+Patch1:		iscsitarget-conn_c.patch
 URL:		http://iscsitarget.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.379
 BuildRequires:	openssl-devel
@@ -59,6 +60,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 %if %{with kernel}
