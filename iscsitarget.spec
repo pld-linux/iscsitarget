@@ -50,6 +50,7 @@ Summary(pl.UTF-8):	Moduł jądra iSCSI
 Release:	%{_rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
 Requires:	%{name} = %{version}-%{_rel}
+%{?with_dist_kernel:%requires_releq_kernel}
 
 %description -n kernel-targetiscsi
 IP over SCSI Target kernel module.
