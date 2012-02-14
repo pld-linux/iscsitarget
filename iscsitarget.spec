@@ -5,10 +5,10 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		_rel 49
+%define		_rel 50
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
-Name:		iscsitarget
+Name:		iscsitarget%{_alt_kernel}
 Version:	1.4.20.2
 Release:	%{_rel}
 License:	GPL
