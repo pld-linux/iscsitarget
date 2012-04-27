@@ -5,18 +5,19 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		_rel 60
+%define		rel 61
+%define		pname	iscsitarget
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
-Name:		iscsitarget%{_alt_kernel}
+Name:		%{pname}%{_alt_kernel}
 Version:	1.4.20.2
-Release:	%{_rel}
+Release:	%{rel}
 License:	GPL
 Group:		Base/Kernel
-Source0:	http://dl.sourceforge.net/iscsitarget/%{name}-%{version}.tar.gz
+Source0:	http://dl.sourceforge.net/iscsitarget/%{pname}-%{version}.tar.gz
 # Source0-md5:	2f23c0bfe124d79f5c20e34ef2aaff82
-Source1:	%{name}.init
-Source2:	%{name}.sysconfig
+Source1:	%{pname}.init
+Source2:	%{pname}.sysconfig
 Patch0:		debian-changes-1.4.20.2-6
 URL:		http://iscsitarget.sourceforge.net/
 BuildRequires:	rpmbuild(macros) >= 1.379
@@ -26,7 +27,7 @@ BuildRequires:	openssl-devel
 %endif
 Requires(post,preun):	/sbin/chkconfig
 Requires:	rc-scripts
-BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
+BuildRoot:	%{tmpdir}/%{pname}-%{version}-root-%(id -u -n)
 
 %define		_sbindir	/sbin
 
@@ -46,9 +47,9 @@ danych.
 %package -n kernel-targetiscsi
 Summary:	iSCSI kernel module
 Summary(pl.UTF-8):	Moduł jądra iSCSI
-Release:	%{_rel}@%{_kernel_ver_str}
+Release:	%{rel}@%{_kernel_ver_str}
 Group:		Base/Kernel
-Requires:	%{name} = %{version}-%{_rel}
+Requires:	%{pname} = %{version}-%{rel}
 %{?with_dist_kernel:%requires_releq_kernel}
 
 %description -n kernel-targetiscsi
@@ -58,7 +59,7 @@ IP over SCSI Target kernel module.
 Moduł jądra dla protokołu IP over SCSI (Target).
 
 %prep
-%setup -q
+%setup -q -n %{pname}-%{version}
 %patch0 -p1
 
 %build
