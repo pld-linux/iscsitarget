@@ -5,7 +5,7 @@
 %bcond_without	userspace	# don't build userspace module
 %bcond_with	verbose		# verbose build (V=1)
 #
-%define		rel 67
+%define		rel 68
 %define		pname	iscsitarget
 Summary:	iSCSI target - SCSI over IP
 Summary(pl.UTF-8):	iSCSI target - SCSI po IP
@@ -44,7 +44,7 @@ prawdziwym obciążeniem oraz skalowalność i wszechstronność pozwalająca
 na sprostanie wyzwaniom przyszłych potrzeb i rozwoju składowania
 danych.
 
-%package -n kernel-targetiscsi
+%package -n kernel%{_alt_kernel}-targetiscsi
 Summary:	iSCSI kernel module
 Summary(pl.UTF-8):	Moduł jądra iSCSI
 Release:	%{rel}@%{_kernel_ver_str}
@@ -52,10 +52,10 @@ Group:		Base/Kernel
 Requires:	%{pname} = %{version}-%{rel}
 %{?with_dist_kernel:%requires_releq_kernel}
 
-%description -n kernel-targetiscsi
+%description -n kernel%{_alt_kernel}-targetiscsi
 IP over SCSI Target kernel module.
 
-%description -n kernel-targetiscsi -l pl.UTF-8
+%description -n kernel%{_alt_kernel}-targetiscsi -l pl.UTF-8
 Moduł jądra dla protokołu IP over SCSI (Target).
 
 %prep
@@ -95,10 +95,10 @@ install doc/manpages/*.8 $RPM_BUILD_ROOT%{_mandir}/man8
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -n kernel-targetiscsi
+%post -n kernel%{_alt_kernel}-targetiscsi
 %depmod %{_kernel_ver}
 
-%postun -n kernel-targetiscsi
+%postun -n kernel%{_alt_kernel}-targetiscsi
 %depmod %{_kernel_ver}
 
 %post
@@ -122,7 +122,7 @@ fi
 %endif
 
 %if %{with kernel}
-%files -n kernel-targetiscsi
+%files -n kernel%{_alt_kernel}-targetiscsi
 %defattr(644,root,root,755)
 /lib/modules/%{_kernel_ver}/misc/*
 %endif
