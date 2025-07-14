@@ -60,7 +60,7 @@ Moduł jądra dla protokołu IP over SCSI (Target).
 
 %prep
 %setup -q -n %{pname}-%{version}
-%patch0 -p1
+%patch -P0 -p1
 
 %build
 %if %{with kernel}
